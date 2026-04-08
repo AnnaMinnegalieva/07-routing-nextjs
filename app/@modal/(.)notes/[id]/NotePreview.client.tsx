@@ -1,18 +1,38 @@
 "use client";
 
-import css from "./NotePreview.module.css";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
+import { getSingleNote } from "@/lib/api";
+import Modal from "@/components/Modal/Modal";
 
-type Props = {
-  title: string;
-  content: string;
-};
+const NotePreviewClient = () => {
+  const { id } = useParams<{ id: string }>();
 
-const NotePreviewClient = ({ title, content }: Props) => {
+  const {
+    data: note,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["note", id],
+    queryFn: () => getSingleNote(id),
+    refetchOnMount: false,
+  });
+
+  if (isLoading) return <p>Loading...</p>;
+
+  if (error || !note) return <p>Something went wrong...</p>;
+
+  const formattedDate = note.updatedAt
+    ? `Updated at: ${note.updatedAt}`
+    : `Created at: ${note.createdAt}`;
+
   return (
-    <div className={css.container}>
-      <h2 className={css.title}>{title}</h2>
-      <p className={css.content}>{content}</p>
-    </div>
+    <Modal>
+      <h2>{note.title}</h2>
+      <p>{note.content}</p>
+      <p>{note.tag}</p>
+      <p>{formattedDate}</p>
+    </Modal>
   );
 };
 

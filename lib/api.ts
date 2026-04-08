@@ -13,10 +13,11 @@ axios.defaults.headers.common["Authorization"] =
 export const fetchNotes = async (
   page: number = 1,
   perPage: number = 12,
-  search: string = ""
+  search: string = "",
+  tag?: string
 ): Promise<NoteListResponse> => {
   const res = await axios.get<NoteListResponse>("/notes", {
-    params: { page, perPage, search },
+    params: { page, perPage, search, tag },
   });
   return res.data;
 };
@@ -39,25 +40,5 @@ export const createNote = async (newNote: CreateNoteData): Promise<Note> => {
 
 export const deleteNote = async (id: string): Promise<Note> => {
   const res = await axios.delete<Note>(`/notes/${id}`);
-  return res.data;
-};
-
-export const getNotes = async (categoryId?: string) => {
-  const res = await axios.get<NoteListResponse>("/notes", {
-    params: { categoryId },
-  });
-  return res.data;
-};
-
-export type Category = {
-  id: string;
-  name: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export const getCategories = async () => {
-  const res = await axios<Category[]>("/categories");
   return res.data;
 };

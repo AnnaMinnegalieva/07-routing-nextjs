@@ -1,18 +1,26 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { getSingleNote } from "@/lib/api";
 import css from "./NoteDetails.module.css";
 
 const NoteDetailsClient = () => {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
 
   const { data: note, isLoading, error } = useQuery({
     queryKey: ["note", id],
     queryFn: () => getSingleNote(id),
     refetchOnMount: false,
   });
+
+  const handleGoBack = () => {
+    const isSure = confirm("Are you sure?");
+    if (isSure) {
+      router.back();
+    }
+  };
 
   if (isLoading) return <p>Loading, please wait...</p>;
 
@@ -24,6 +32,7 @@ const NoteDetailsClient = () => {
 
   return (
     <div className={css.container}>
+      <button onClick={handleGoBack}>Back</button>
       <div className={css.item}>
         <div className={css.header}>
           <h2>{note.title}</h2>

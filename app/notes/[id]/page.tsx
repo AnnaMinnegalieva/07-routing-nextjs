@@ -1,5 +1,10 @@
+import {
+  QueryClient,
+  HydrationBoundary,
+  dehydrate,
+} from "@tanstack/react-query";
 import { getSingleNote } from "@/lib/api";
-import css from "./NoteDetails.module.css";
+import NoteDetailsClient from "./NoteDetails.client";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -7,13 +12,17 @@ type Props = {
 
 const NoteDetails = async ({ params }: Props) => {
   const { id } = await params;
-  const note = await getSingleNote(id);
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery({
+    queryKey: ["note", id],
+    queryFn: () => getSingleNote(id),
+  });
 
   return (
-    <div className={css.container}>
-      <h2 className={css.title}>{note.title}</h2>
-      <p className={css.content}>{note.content}</p>
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <NoteDetailsClient />
+    </HydrationBoundary>
   );
 };
 
