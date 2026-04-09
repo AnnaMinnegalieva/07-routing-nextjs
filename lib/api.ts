@@ -17,7 +17,7 @@ export const fetchNotes = async (
   tag?: NoteTag
 ): Promise<NoteListResponse> => {
   const res = await axios.get<NoteListResponse>("/notes", {
-    params: { page, perPage, search, categoryId: tag },
+    params: { page, perPage, search, tag },
   });
   return res.data;
 };

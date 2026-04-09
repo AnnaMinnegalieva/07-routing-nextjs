@@ -4,13 +4,12 @@ import { useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
 import { fetchNotes } from "@/lib/api";
+import type { NoteTag } from "@/types/note";
 import NoteList from "@/components/NoteList/NoteList";
 import SearchBox from "@/components/SearchBox/SearchBox";
 import Pagination from "@/components/Pagination/Pagination";
 import Modal from "@/components/Modal/Modal";
 import NoteForm from "@/components/NoteForm/NoteForm";
-
-import type { NoteTag } from "@/types/note";
 
 type Props = {
   tag?: NoteTag;
@@ -18,6 +17,7 @@ type Props = {
 
 const NotesClient = ({ tag }: Props) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [inputValue, setInputValue] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -27,13 +27,15 @@ const NotesClient = ({ tag }: Props) => {
     placeholderData: keepPreviousData,
   });
 
-  const handleSearch = useDebouncedCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchQuery(event.target.value);
-      setCurrentPage(1);
-    },
-    300
-  );
+  const debouncedSearch = useDebouncedCallback((value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1);
+  }, 300);
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
+    debouncedSearch(event.target.value);
+  };
 
   if (isLoading) return <p>Loading...</p>;
 
@@ -42,7 +44,7 @@ const NotesClient = ({ tag }: Props) => {
   return (
     <div>
       <header>
-        <SearchBox value={searchQuery} onChange={handleSearch} />
+        <SearchBox value={inputValue} onChange={handleSearch} />
         {data && data.totalPages > 1 && (
           <Pagination
             totalPages={data.totalPages}
