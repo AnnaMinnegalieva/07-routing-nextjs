@@ -10,8 +10,10 @@ import Pagination from "@/components/Pagination/Pagination";
 import Modal from "@/components/Modal/Modal";
 import NoteForm from "@/components/NoteForm/NoteForm";
 
+import type { NoteTag } from "@/types/note";
+
 type Props = {
-  tag?: string;
+  tag?: NoteTag;
 };
 
 const NotesClient = ({ tag }: Props) => {

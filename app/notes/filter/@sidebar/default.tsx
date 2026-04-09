@@ -1,5 +1,4 @@
 import Link from "next/link";
-import axios from "axios";
 import css from "./SidebarNotes.module.css";
 
 type Category = {
@@ -10,11 +9,16 @@ type Category = {
   updatedAt: string;
 };
 
-const getCategories = async () => {
-  const res = await axios<Category[]>(
-    "https://next-v1-notes-api.goit.study/categories"
+const getCategories = async (): Promise<Category[]> => {
+  const res = await fetch(
+    "https://next-v1-notes-api.goit.study/categories",
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_NOTEHUB_TOKEN}`,
+      },
+    }
   );
-  return res.data;
+  return res.json();
 };
 
 const SidebarNotes = async () => {
