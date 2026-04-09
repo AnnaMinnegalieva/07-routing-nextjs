@@ -1,6 +1,21 @@
 import Link from "next/link";
-import { getCategories } from "@/lib/api";
+import axios from "axios";
 import css from "./SidebarNotes.module.css";
+
+type Category = {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+const getCategories = async () => {
+  const res = await axios<Category[]>(
+    "https://next-v1-notes-api.goit.study/categories"
+  );
+  return res.data;
+};
 
 const SidebarNotes = async () => {
   const categories = await getCategories();
